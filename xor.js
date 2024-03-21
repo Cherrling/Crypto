@@ -164,7 +164,7 @@ function main() {
     for (let i = 0; i < key.length; i++) {
         const r = key[i];
         if (r==0) {
-            content+="00"
+            content+="20"
         }else{
             content+=key[i]
         }
