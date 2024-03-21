@@ -66,7 +66,7 @@ function hexToAscii(hexString) {
         const asciiChar = String.fromCharCode(hexCharCode);
 
         // 将十进制数值转换为 ASCII 字符并拼接到结果字符串中
-        if (asciiChar == 0) {
+        if (hexCharCode == 0) {
             asciiString += '+';
             continue;
         }
@@ -82,23 +82,25 @@ function hexToAscii(hexString) {
 }
 
 function verifyspace() {
-    let res = createMatrix(10, 1000, 1);
+    let res = createMatrix(10, 400, 1);
     // 每两个字符为一组进行处理
     for (let i = 0; i < 10; i++) {
         for (let j = 0; j < 10; j++) {
             let hexString = xor[i][j]
+            // console.log(hexString);
             for (let k = 0; k < hexString.length; k += 2) {
                 // 获取当前两个字符并转换为十进制数值
-                const hexCharCode = parseInt(hexString.substr(i, 2), 16);
-
+                const hexCharCode = parseInt(hexString.substr(k, 2), 16);
+                // console.log(hexCharCode);
                 const asciiChar = String.fromCharCode(hexCharCode);
+                // console.log(asciiChar);
                 // 将十进制数值转换为 ASCII 字符并拼接到结果字符串中
 
-                if (!((asciiChar == 0) || (asciiChar >= 'A' && asciiChar <= 'Z') || (asciiChar >= 'a' && asciiChar <= 'z'))) {
-                    res[i][k]=0;
+                if (!((hexCharCode == 0) || (asciiChar >= 'A' && asciiChar <= 'Z') || (asciiChar >= 'a' && asciiChar <= 'z'))) {
+                    res[i][k/2]=0;
                 }
             }
-
+            
         }
     }
 
@@ -113,29 +115,30 @@ function computeXorResults() {
             const xorResult = xorHex(hexTexts[i], hexTexts[j]);
             xor[i][j] = xorResult;
             // results.push(`${hexTexts[i]} \n XOR \n${hexTexts[j]}\n = \n${xorResult}\n ASCII \n ${hexToAscii(xorResult)}`);
-            results.push(`${i}:${j}    ${hexToAscii(xorResult)}`);
+            // results.push(`${i}:${j}    ${hexToAscii(xorResult)}`);
         }
-        results.push(``);
+        // results.push(``);
     }
     return results;
 }
 
 // 主函数
 function main() {
-    const xorResults = computeXorResults();
-    outputXorResults(xorResults);
-    // computeXorResults();
-    // let res=verifyspace()
-    // let r='';
-    // for (let i = 0; i < 10; i++) {
-    //     r=''
-    //     for (let j = 0; j < 1000; j++) {
-    //         r+=res[i][j];
-    //     }
-    //     results.push(`${r}`)
-    // }
-    // outputXorResults(results)
-    // console.log(xor);
+    // const xorResults = computeXorResults();
+    // outputXorResults(xorResults);
+
+
+    computeXorResults();
+    let res=verifyspace()
+    // console.log(res);
+
+    for (let i = 0; i < 10; i++) {
+        results.push(res[i])
+        results.push("\n")
+        
+    }
+
+    outputXorResults(results)
 }
 
 // 执行主函数
