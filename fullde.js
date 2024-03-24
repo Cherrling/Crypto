@@ -1,5 +1,7 @@
 const fs = require('fs');
-const hexTexts = [
+
+// 十个十六进制字符串
+const hexStrings= [
     "3f561ba9adb4b6ebec54424ba317b564418fac0dd35f8c08d31a1fe9e24fe56808c213f17c81d9607cee021dafe1e001b21ade877a5e68bea88d61b93ac5ee0d562e8e9582f5ef375f0a4ae20ed86e935de81230b59b73fb4302cd95d770c65b40aaa065f2a5e33a5a0bb5dcaba43722130f042f8ec85b7c2070",
     "32510ba9a7b2bba9b8005d43a304b5714cc0bb0c8a34884dd91304b8ad40b62b07df44ba6e9d8a2368e51d04e0e7b207b70b9b8261112bacb6c866a232dfe257527dc29398f5f3251a0d47e503c66e935de81230b59b7afb5f41afa8d661cb",
     '315c4eeaa8b5f8aaf9174145bf43e1784b8fa00dc71d885a804e5ee9fa40b16349c146fb778cdf2d3aff021dfff5b403b510d0d0455468aeb98622b137dae857553ccd8883a7bc37520e06e515d22c954eba5025b8cc57ee59418ce7dc6bc41556bdb36bbca3e8774301fbcaa3b83b220809560987815f65286764703de0f3d524400a19b159610b11ef3e',
@@ -13,69 +15,31 @@ const hexTexts = [
     "32510ba9babebbbefd001547a810e67149caee11d945cd7fc81a05e9f85aac650e9052ba6a8cd8257bf14d13e6f0a803b54fde9e77472dbff89d71b57bddef121336cb85ccb8f3315f4b52e301d16e9f52f904",
     // 添加更多的十六进制文本...
 ];
-function xorHexStrings(hex1, hex2) {
-    // 确保两个字符串的长度相同
-    const maxLength = Math.max(hex1.length, hex2.length);
-    hex1 = hex1.padStart(maxLength, '0');
-    hex2 = hex2.padStart(maxLength, '0');
 
+// 单个十六进制字符串
+const xorString = "46194ea9e9fbf8ebb854150aed43b5300e8fee588a5fcd0880204be9ad09e52b499013ba34d88a603abc4d50afa0e046e743ded0321168edf8c822f07b89a757137d8edcccf5bc631a4b06ab409f6ed01cba4130b59b73fb4302cd95d770c65b40aaa065f2a5e33a5a0bb5dcaba43722130f042f8ec85b7c207064703de0f3d524400a19b159610b11ef3ec9f26d71b6cf61a711cc229f77ace7aa88a2f19983122b11be87a59c355d25f8e4b13f1efff71ea313c8661dd9a4ce";
+
+// 异或操作函数
+function xorHexStrings(hex1, hex2) {
     let result = '';
-    // 每两个字符为一组进行异或操作
-    for (let i = 0; i < maxLength; i += 2) {
-        const byte1 = parseInt(hex1.substr(i, 2), 16);
-        const byte2 = parseInt(hex2.substr(i, 2), 16);
-        const xorResult = (byte1 ^ byte2).toString(16).padStart(2, '0');
-        result += xorResult;
+    const maxLength = Math.max(hex1.length, hex2.length);
+    for (let i = 0; i < maxLength; i++) {
+        const byte1 = parseInt(hex1[i] || '0', 16);
+        const byte2 = parseInt(hex2[i] || '0', 16);
+        const xorResult = (byte1 ^ byte2).toString(16).toUpperCase();
+        result += xorResult.padStart(2, '0');
     }
     return result;
 }
 
-// 将十六进制字符串转换为 ASCII 字符串
-function hexToAscii(hexString) {
-    let asciiString = '';
-    // 每两个字符为一组进行处理
-    for (let i = 0; i < hexString.length; i += 2) {
-        // 获取当前两个字符并转换为十进制数值
-        const hexCharCode = parseInt(hexString.substr(i, 2), 16);
-        // 将十进制数值转换为 ASCII 字符并拼接到结果字符串中
-        asciiString += String.fromCharCode(hexCharCode);
-    }
-    return asciiString;
-}
+// 进行异或操作
+const resultHexString = xorHexStrings(originalHexString, xorHexString);
 
-// 示例用法
-// const hexString1 = '32510ba9babebbbefd001547a810e67149caee11d945cd7fc81a05e9f85aac650e9052ba6a8cd8257bf14d13e6f0a803b54fde9e77472dbff89d71b57bddef121336cb85ccb8f3315f4b52e301d16e9f52f904';
-const hexString1 =  '466d06ece998b7a2fb1d464fed2ced7641ddaa3cc31c9941cf110abbf409ed39598005b3399ccfafb61d0315fca0a314be138a9f32503bedac8067f03adbf3575c3b8edc9ba7f537530541ab0f9f3cd04ff50d'
-    
-const hexString2 =  '66396e89c9dbd8cc9874352acd6395102eafce78aa7fed08a07f6bc98d29c50b69b0339a19f8aa401a9c6d708f80c066c763fef0123148cdd8e802d05ba98777335daefcecd59c433a6b268b60bf4ef03c9a61';
-// const hexString2 = '46194ea9e9fbf8ebb854150aed43b5300e8fee588a5fcd0880204be9ad09e52b499013ba34d88a603abc4d50afa0e046e743ded0321168edf8c822f07b89a757137d8edcccf5bc631a4b06ab409f6ed01cba41';
-// const hexString2 =  '32510ba9babebbbefd001547a810e67149caee11d945cd7fc81a05e9f85aac650e9052ba6a8cd8257bf14d13e6f0a803b54fde9e77472dbff89d71b57bddef121336cb85ccb8f3315f4b52e301d16e9f52f904';
-
-
-
-const xorResult = xorHexStrings(hexString1, hexString2);
-const asciiText = hexToAscii(xorResult);
-console.log(xorResult);
-console.log(asciiText);
-
-// let xorResult = ''
-// let asciiText = '';
-
-// for (let i = 0; i < hexTexts.length; i++) {
-//     xorResult = xorHexStrings(hexTexts[i], hexString2);
-//     asciiText += hexToAscii(xorResult);
-//     asciiText += '\n'
-
-// }
-
-
-// 将 ASCII 字符串写入文件
-fs.writeFile('decode.txt', asciiText, 'utf8', (err) => {
+// 将结果写入文件
+fs.writeFile('de.txt', resultHexString, (err) => {
     if (err) {
-        console.error('Error writing file:', err);
+        console.error('写入文件时出错：', err);
         return;
     }
-    console.log('XOR result has been saved to decode.txt');
+    console.log('结果已写入到 de.txt 文件。');
 });
-
-
