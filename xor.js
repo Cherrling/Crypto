@@ -13,7 +13,6 @@ const hexTexts = [
     "271946f9bbb2aeadec111841a81abc300ecaa01bd8069d5cc91005e9fe4aad6e04d513e96d99de2569bc5e50eeeca709b50a8a987f4264edb6896fb537d0a716132ddc938fb0f836480e06ed0fcd6e9759f40462f9cf57f4564186a2c1778f1543efa270bda5e933421cbe88a4a52222190f471e9bd15f652b653b7071aec59a2705081ffe72651d08f822c9ed6d76e48b63ab15d0208573a7eef027",
     "466d06ece998b7a2fb1d464fed2ced7641ddaa3cc31c9941cf110abbf409ed39598005b3399ccfafb61d0315fca0a314be138a9f32503bedac8067f03adbf3575c3b8edc9ba7f537530541ab0f9f3cd04ff50d66f1d559ba520e89a2cb2a83",
     "32510ba9babebbbefd001547a810e67149caee11d945cd7fc81a05e9f85aac650e9052ba6a8cd8257bf14d13e6f0a803b54fde9e77472dbff89d71b57bddef121336cb85ccb8f3315f4b52e301d16e9f52f904",
-    // 添加更多的十六进制文本...
 ];
 
 function createMatrix(rows, cols, val) {
@@ -21,8 +20,7 @@ function createMatrix(rows, cols, val) {
     for (let i = 0; i < rows; i++) {
         matrix[i] = [];
         for (let j = 0; j < cols; j++) {
-            // 这里可以为每个元素赋予初始值
-            matrix[i][j] = val; // 初始值为 0，您可以根据需要修改
+            matrix[i][j] = val;
         }
     }
     return matrix;
@@ -32,8 +30,6 @@ var xor = createMatrix(11, 11, 0);
 
 var results = [];
 
-
-// 异或函数
 function xorHex(hex1, hex2) {
     const buf1 = Buffer.from(hex1, 'hex');
     const buf2 = Buffer.from(hex2, 'hex');
@@ -50,7 +46,7 @@ function xorHex(hex1, hex2) {
 function outputXorResults(results) {
     fs.writeFile('xor_results.txt', results.join('\n'), 'utf8', (err) => {
         if (err) {
-            console.error('Error writing file:', err);
+            console.error('Error', err);
             return;
         }
         console.log('XOR results have been saved to xor_results.txt');
@@ -60,13 +56,10 @@ function outputXorResults(results) {
 function hexToAscii(hexString) {
     let asciiString = '';
 
-    // 每两个字符为一组进行处理
     for (let i = 0; i < hexString.length; i += 2) {
-        // 获取当前两个字符并转换为十进制数值
         const hexCharCode = parseInt(hexString.substr(i, 2), 16);
         const asciiChar = String.fromCharCode(hexCharCode);
 
-        // 将十进制数值转换为 ASCII 字符并拼接到结果字符串中
         if (hexCharCode == 0) {
             asciiString += '+';
             continue;
@@ -84,38 +77,14 @@ function hexToAscii(hexString) {
 
 function verifyspace() {
     let res = createMatrix(11, 400, 1);
-    // for (let i = 0; i < 11; i++) {
-    //     for (let j = 0; j < 11; j++) {
-    //         let hexString = xor[i][j]
-    //         // console.log(hexString);
-    //         for (let k = 0; k < hexString.length; k += 2) {
-    //             // 获取当前两个字符并转换为十进制数值
-    //             const hexCharCode = parseInt(hexString.substr(k, 2), 16);
-    //             // console.log(hexCharCode);
-    //             const asciiChar = String.fromCharCode(hexCharCode);
-    //             // console.log(asciiChar);
-    //             // 将十进制数值转换为 ASCII 字符并拼接到结果字符串中
-
-    //             if (!((hexCharCode == 0) || (asciiChar >= 'A' && asciiChar <= 'Z') || (asciiChar >= 'a' && asciiChar <= 'z'))) {
-    //                 res[i][k / 2] = 0;
-    //             }
-    //         }
-
-    //     }
-    // }
     let num = 0;
     for (let i = 0; i < 11; i++) {
         for (let k = 0; k < 166; k += 2) {
             num = 11;
             for (let j = 0; j < 11; j++) {
                 let hexString = xor[i][j]
-                // console.log(hexString);
-                // 获取当前两个字符并转换为十进制数值
                 const hexCharCode = parseInt(hexString.substr(k, 2), 16);
-                // console.log(hexCharCode);
                 const asciiChar = String.fromCharCode(hexCharCode);
-                // console.log(asciiChar);
-                // 将十进制数值转换为 ASCII 字符并拼接到结果字符串中
 
                 if (!((hexCharCode == 0) || (asciiChar >= 'A' && asciiChar <= 'Z') || (asciiChar >= 'a' && asciiChar <= 'z'))) {
                     num--;
@@ -128,12 +97,8 @@ function verifyspace() {
 
         }
     }
-
-
-
     return res;
 }
-
 
 // 计算并输出异或结果
 function computeXorResults() {
@@ -141,24 +106,15 @@ function computeXorResults() {
         for (let j = 0; j < hexTexts.length; j++) {
             const xorResult = xorHex(hexTexts[i], hexTexts[j]);
             xor[i][j] = xorResult;
-            // results.push(`${hexTexts[i]} \n XOR \n${hexTexts[j]}\n = \n${xorResult}\n ASCII \n ${hexToAscii(xorResult)}`);
-            // results.push(`${i}:${j}    ${hexToAscii(xorResult)}`);
         }
-        // results.push(``);
     }
     return results;
 }
 
 // 主函数
 function main() {
-    // const xorResults = computeXorResults();
-    // outputXorResults(xorResults);
-
-
     computeXorResults();
     let res = verifyspace()
-    // console.log(res);
-
     let key = Array(400).fill(-1)
 
     for (let i = 0; i < 400; i++) {

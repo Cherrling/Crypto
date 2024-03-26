@@ -25,15 +25,14 @@ fs.readFile('plain.txt', 'utf8', (err, data) => {
 
   const ciphertext = oneTimePadEncrypt(plaintext, key);
 
-  console.log('Plaintext:', plaintext);
-  console.log('Key:', key.toString('hex'));
-  console.log('Ciphertext:', ciphertext);
+  console.log('明文:', plaintext);
+  console.log('密钥:', key.toString('hex'));
+  console.log('密文:', ciphertext);
 
   fs.writeFile('cipher.txt', ciphertext, (err) => {
     if (err) {
-      console.error('Error writing to file:', err);
+      console.error('写入失败', err);
       return;
     }
-    console.log('Ciphertext written to cipher.txt');
   });
 });
