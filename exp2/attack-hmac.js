@@ -1,8 +1,13 @@
 const fs = require('fs');
-const crypto = require('crypto');
+const { program } = require('commander');
+program
+    .option('-i,--in <in>', 'File to dec', "hmac_encrypted_image.bmp")
+    .option('-o,--out <out>', 'Output file', "hmac_attacked_image.bmp")
+    .parse(process.argv);
+
 
 // 读取加密的 BMP 文件
-fs.readFile('hmac_encrypted_image.bmp', (err, data) => {
+fs.readFile(program.opts().in, (err, data) => {
     if (err) {
         console.error('Error reading file:', err);
         return;
@@ -57,11 +62,11 @@ function writeattackedDataToFile(attackedData) {
     const attackedImageData = attackedData.pixelData;
     const attackedFileData = Buffer.concat([bmpHeader,bmpInfoHeader, hmac, attackedImageData]);
 
-    fs.writeFile('hmac_attacked_image.bmp', attackedFileData, (err) => {
+    fs.writeFile(program.opts().out, attackedFileData, (err) => {
         if (err) {
             console.error('Error writing to file:', err);
             return;
         }
-        console.log('attacked image file saved as hmac_attacked_image.bmp');
+        console.log('attacked image file saved as '+program.opts().out);
     });
 }

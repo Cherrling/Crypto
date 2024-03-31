@@ -1,8 +1,17 @@
 const fs = require('fs');
 const crypto = require('crypto');
+const { program } = require('commander');
+
+program
+    .option('-k,--key <key>', 'Key file', 'key.json')
+    .option('-i,--in <in>', 'File to enc', "plain.bmp")
+    .option('-o,--out <out>', 'Output file', "dec.bmp")
+    .parse(process.argv);
+
 
 // 读取 BMP 文件
-fs.readFile('plain2.bmp', (err, data) => {
+// console.log(program.in.toString())
+fs.readFile(program.opts().in, (err, data) => {
     // fs.readFile('input_image.bmp', (err, data) => {
     if (err) {
         console.error('Error reading file:', err);
@@ -14,14 +23,14 @@ fs.readFile('plain2.bmp', (err, data) => {
 
     // 提取像素数据并转换为十六进制字符串
     const pixelDataHex = extractPixelDataHex(bmpData, 32); // 选择每像素 24 位的数据
-// console.log(bmpData.imageData.toString('hex'));
-// console.log(pixelDataHex.toString());
+    // console.log(bmpData.imageData.toString('hex'));
+    // console.log(pixelDataHex.toString());
     // 使用 AES CBC 加密
     const encryptedData = encryptAES(pixelDataHex);
 
     // console.log(encryptedData.encryptedData.toString('hex'));
     // 将加密后的数据写入新的 BMP 文件
-    writeEncryptedDataToFile(bmpData,encryptedData);
+    writeEncryptedDataToFile(bmpData, encryptedData);
 });
 
 // 解析 BMP 文件
@@ -32,13 +41,13 @@ function parseBMP(data) {
     // 提取图像宽度和高度
     const width = data.readUInt32LE(18);
     const height = data.readUInt32LE(22);
-    console.log(width+' '+height);
+    console.log(width + ' ' + height);
     return {
         headerSize,
         imageDataOffset,
         width,
         height,
-        headerData: data.slice(0,54),
+        headerData: data.slice(0, 54),
         imageData: data.slice(imageDataOffset)
     };
 }
@@ -61,10 +70,35 @@ function extractPixelDataHex(bmpData, bitsPerPixel) {
     return pixelDataHex;
 }
 
+function readkey(kfile) {
+    // 读取文件
+
+
+    // 同步读取文件内容
+    const data = fs.readFileSync(kfile, 'utf8');
+
+    // 解析JSON数据
+    const jsonData = JSON.parse(data);
+
+
+
+    // console.log(jsonData);
+
+    const key = Buffer.from(jsonData.key, 'hex'); // 将密钥替换为加密时使用的密钥
+    const iv = Buffer.from(jsonData.iv, 'hex'); // 将初始化向量替换为加密时使用的初始化向量
+    // const key = Buffer.from('8cf95a93ddb860ff6155fbe502ca1f798cf95a93ddb860ff6155fbe502ca1f79', 'hex'); // 将密钥替换为加密时使用的密钥
+    // const iv = Buffer.from('98c49563bcd639013600bb4215161249', 'hex'); // 将初始化向量替换为加密时使用的初始化向量
+    return { key, iv }
+}
+
+
+
 // 使用 AES CBC 加密
 function encryptAES(data) {
-    const key = Buffer.from('8cf95a93ddb860ff6155fbe502ca1f798cf95a93ddb860ff6155fbe502ca1f79', 'hex'); // 将密钥替换为加密时使用的密钥
-    const iv = Buffer.from('98c49563bcd639013600bb4215161249', 'hex'); // 将初始化向量替换为加密时使用的初始化向量
+    // const key = Buffer.from('8cf95a93ddb860ff6155fbe502ca1f798cf95a93ddb860ff6155fbe502ca1f79', 'hex'); // 将密钥替换为加密时使用的密钥
+    // const iv = Buffer.from('98c49563bcd639013600bb4215161249', 'hex'); // 将初始化向量替换为加密时使用的初始化向量
+    const { key, iv } = readkey(program.opts().key)
+
 
     const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
 
@@ -79,7 +113,7 @@ function encryptAES(data) {
 }
 
 // 将加密后的数据写入新的 BMP 文件
-function writeEncryptedDataToFile(bmpData,encryptedData) {
+function writeEncryptedDataToFile(bmpData, encryptedData) {
     const { key, iv, encryptedData: data } = encryptedData;
 
     const bmpHeader = bmpData.headerData.slice(0, 14);
@@ -90,12 +124,12 @@ function writeEncryptedDataToFile(bmpData,encryptedData) {
     const encryptedImageData = Buffer.from(data, 'hex');
     const encryptedFileData = Buffer.concat([bmpHeader, bmpInfoHeader, encryptedImageData]);
 
-    fs.writeFile('encrypted_image.bmp', encryptedFileData, (err) => {
+    fs.writeFile(program.opts().out, encryptedFileData, (err) => {
         if (err) {
             console.error('Error writing to file:', err);
             return;
         }
-        console.log('Encrypted image file saved as encrypted_image.bmp');
+        console.log('Encrypted image file saved as :'+program.opts().out);
         console.log('Encryption Key:', key);
         console.log('Initialization Vector:', iv);
     });
