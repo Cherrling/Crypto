@@ -1,5 +1,6 @@
 const fs = require('fs');
 const crypto = require('crypto');
+const { error } = require('console');
 
 // 读取加密的 BMP 文件
 // let enfile='hmac_encrypted_image.bmp'
@@ -32,13 +33,14 @@ function decryptBMP(data) {
 
     const orihmac = data.slice(54, 54 + 32).toString('hex')
 
+    console.log(hmacResult);
+    console.log(orihmac);
     if (orihmac == hmacResult) {
         console.log('yes');
     } else {
         console.log('no');
+        throw new Error('HMAC不匹配')
     }
-    console.log(hmacResult);
-    console.log(orihmac);
 
     // 使用之前的密钥和初始化向量
     const key = Buffer.from('8cf95a93ddb860ff6155fbe502ca1f798cf95a93ddb860ff6155fbe502ca1f79', 'hex'); // 将密钥替换为加密时使用的密钥
