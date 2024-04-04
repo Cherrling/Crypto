@@ -83,15 +83,11 @@ function readkey(kfile) {
 
     const key = Buffer.from(jsonData.key, 'hex'); // 将密钥替换为加密时使用的密钥
     const iv = Buffer.from(jsonData.iv, 'hex'); // 将初始化向量替换为加密时使用的初始化向量
-    // const key = Buffer.from('8cf95a93ddb860ff6155fbe502ca1f798cf95a93ddb860ff6155fbe502ca1f79', 'hex'); // 将密钥替换为加密时使用的密钥
-    // const iv = Buffer.from('98c49563bcd639013600bb4215161249', 'hex'); // 将初始化向量替换为加密时使用的初始化向量
-    return { key, iv }
+  return { key, iv }
 }
 // 使用 AES CBC 加密
 function encryptAES(data) {
-    // const key = Buffer.from('8cf95a93ddb860ff6155fbe502ca1f798cf95a93ddb860ff6155fbe502ca1f79', 'hex'); // 将密钥替换为加密时使用的密钥
-    // const iv = Buffer.from('98c49563bcd639013600bb4215161249', 'hex'); // 将初始化向量替换为加密时使用的初始化向量
-    const { key, iv } = readkey(program.opts().key)
+ const { key, iv } = readkey(program.opts().key)
 
     const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
 

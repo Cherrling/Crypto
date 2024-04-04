@@ -25,24 +25,17 @@ function attackBMP(data,num) {
     // 从文件中提取加密数据
     const oriImageData = data.slice(54); // 从偏移量 54 处开始，跳过文件头和信息头
     const oriDataHex = oriImageData.toString('hex');
-
     // 将十六进制字符串转换为 Buffer
     const buffer = Buffer.from(oriDataHex, 'hex');
-
     // 随机选择要更改的字节索引
     const bytesToChange = new Set();
     while (bytesToChange.size < num) {
         bytesToChange.add(Math.floor(Math.random() * buffer.length));
     }
-
     // 随机更改选定的字节
     for (const byteIndex of bytesToChange) {
         buffer[byteIndex] = Math.floor(Math.random() * 256); // 0 到 255 之间的随机数
     }
-
-    // 将修改后的 Buffer 转换回十六进制字符串
-    const randomizedHexString = buffer.toString('hex');
-
 
     return {
         headData:data.slice(0,54),

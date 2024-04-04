@@ -7,10 +7,6 @@ program
     .option('-o,--out <out>', 'Output file', "dec.bmp")
     .parse(process.argv);
 
-
-// 读取加密的 BMP 文件
-// let enfile='encrypted_image.bmp'
-// let enfile='attacked_image.bmp'
 let enfile=program.opts().in
 fs.readFile(enfile, (err, data) => {
     if (err) {
@@ -38,11 +34,8 @@ function readkey(kfile) {
 
     // console.log(jsonData);
 
-    const key = Buffer.from(jsonData.key, 'hex'); // 将密钥替换为加密时使用的密钥
-    const iv = Buffer.from(jsonData.iv, 'hex'); // 将初始化向量替换为加密时使用的初始化向量
-    // const key = Buffer.from('8cf95a93ddb860ff6155fbe502ca1f798cf95a93ddb860ff6155fbe502ca1f79', 'hex'); // 将密钥替换为加密时使用的密钥
-    // const iv = Buffer.from('98c49563bcd639013600bb4215161249', 'hex'); // 将初始化向量替换为加密时使用的初始化向量
-    return { key, iv }
+    const key = Buffer.from(jsonData.key, 'hex'); 
+ return { key, iv }
 }
 
 // 解密 BMP 文件
@@ -50,11 +43,7 @@ function decryptBMP(data) {
     // 从文件中提取加密数据
     const encryptedImageData = data.slice(54); // 从偏移量 54 处开始，跳过文件头和信息头
     const encryptedDataHex = encryptedImageData.toString('hex');
-
-    // 使用之前的密钥和初始化向量
-    // const key = Buffer.from('8cf95a93ddb860ff6155fbe502ca1f798cf95a93ddb860ff6155fbe502ca1f79', 'hex'); // 将密钥替换为加密时使用的密钥
-    // const iv = Buffer.from('98c49563bcd639013600bb4215161249', 'hex'); // 将初始化向量替换为加密时使用的初始化向量
-    const { key, iv } = readkey(program.opts().key)
+ const { key, iv } = readkey(program.opts().key)
 
     // 使用 AES CBC 解密
     const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
